@@ -1,0 +1,12 @@
+# Go
+*.exe
+# Scala / sbt
+target/
+project/target/
+project/project/
+.bsp/
+# Editores
+.idea/
+.vscode/
+# Logs
+*.log
