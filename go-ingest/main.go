@@ -42,10 +42,12 @@ func main() {
 	log.Printf("Juegos cargados: %d", len(games))
 
 	validator := newValidator(games)
+	manager := newManager()
 
 	http.HandleFunc("/health", healthHandler)
-	http.HandleFunc("/events", eventsHandler(validator))
+	http.HandleFunc("/events", eventsHandler(validator, manager))
 	http.HandleFunc("/invalid", invalidHandler(validator))
+	http.HandleFunc("/matches", matchesHandler(manager))
 
 	go checkScala() // en una goroutine para no retrasar el arranque
 

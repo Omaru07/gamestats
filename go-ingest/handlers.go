@@ -14,7 +14,7 @@ func writeJSON(w http.ResponseWriter, status int, body any) {
 }
 
 // eventsHandler atiende POST /events: lee, valida y responde 202 o 400.
-func eventsHandler(v *Validator) http.HandlerFunc {
+func eventsHandler(v *Validator, mgr *Manager) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			writeJSON(w, http.StatusMethodNotAllowed, map[string]string{"error": "usa POST"})
@@ -36,7 +36,12 @@ func eventsHandler(v *Validator) http.HandlerFunc {
 			writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
 			return
 		}
-		// En T3 aquí se enviará el evento a la goroutine de su partida.
+		// Válido: se entrega a la goroutine de su partida.
+		if err := mgr.Submit(e); err != nil {
+			v.Reject(err.Error(), string(body))
+			writeJSON(w, http.StatusBadRequest, map[string]string{"error": err.Error()})
+			return
+		}
 		writeJSON(w, http.StatusAccepted, map[string]string{"status": "accepted"})
 	}
 }
@@ -45,6 +50,13 @@ func eventsHandler(v *Validator) http.HandlerFunc {
 func invalidHandler(v *Validator) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		writeJSON(w, http.StatusOK, v.InvalidList())
+	}
+}
+
+// matchesHandler atiende GET /matches: estado de todas las partidas.
+func matchesHandler(mgr *Manager) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		writeJSON(w, http.StatusOK, mgr.List())
 	}
 }
 
