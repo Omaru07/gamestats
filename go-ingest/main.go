@@ -42,7 +42,7 @@ func main() {
 	log.Printf("Juegos cargados: %d", len(games))
 
 	validator := newValidator(games)
-	manager := newManager()
+	manager := newManager(newHTTPSender(getenv("SCALA_URL", "http://localhost:8081")))
 
 	http.HandleFunc("/health", healthHandler)
 	http.HandleFunc("/events", eventsHandler(validator, manager))
