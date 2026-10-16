@@ -1,0 +1,12 @@
+{
+  "gameId": "racing",
+  "playerRequired": ["PLAYER_JOINED", "LAP_COMPLETED", "POSITION_CHANGED", "PENALTY_APPLIED"],
+  "types": {
+    "MATCH_STARTED": ["players", "totalLaps"],
+    "PLAYER_JOINED": [],
+    "LAP_COMPLETED": ["lap", "lapTimeMs", "position"],
+    "POSITION_CHANGED": ["from", "to"],
+    "PENALTY_APPLIED": ["lap", "seconds", "reason"],
+    "MATCH_FINISHED": []
+  }
+}

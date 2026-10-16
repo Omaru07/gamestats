@@ -1,0 +1,16 @@
+{
+  "eventId": "e-000001",
+  "timestamp": "2026-10-16T10:00:00Z",
+  "gameId": "racing",
+  "gameVersion": "1.0",
+  "matchId": "racing-001",
+  "type": "MATCH_STARTED",
+  "data": {
+    "players": [
+      "ana",
+      "luis",
+      "sofia"
+    ],
+    "totalLaps": 3
+  }
+}

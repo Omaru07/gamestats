@@ -1,0 +1,10 @@
+{
+  "eventId": "e-000002",
+  "timestamp": "2026-10-16T10:00:01Z",
+  "gameId": "racing",
+  "gameVersion": "1.0",
+  "matchId": "racing-001",
+  "playerId": "ana",
+  "type": "PLAYER_JOINED",
+  "data": {}
+}

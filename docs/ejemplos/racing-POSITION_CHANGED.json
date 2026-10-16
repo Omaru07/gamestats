@@ -1,0 +1,13 @@
+{
+  "eventId": "e-000004",
+  "timestamp": "2026-10-16T10:02:40Z",
+  "gameId": "racing",
+  "gameVersion": "1.0",
+  "matchId": "racing-001",
+  "playerId": "luis",
+  "type": "POSITION_CHANGED",
+  "data": {
+    "from": 3,
+    "to": 2
+  }
+}

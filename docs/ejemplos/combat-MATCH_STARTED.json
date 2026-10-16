@@ -1,0 +1,15 @@
+{
+  "eventId": "e-000007",
+  "timestamp": "2026-10-16T11:00:00Z",
+  "gameId": "combat",
+  "gameVersion": "1.0",
+  "matchId": "combat-001",
+  "type": "MATCH_STARTED",
+  "data": {
+    "players": [
+      "ana",
+      "luis",
+      "sofia"
+    ]
+  }
+}

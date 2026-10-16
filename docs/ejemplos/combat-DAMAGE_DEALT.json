@@ -1,0 +1,14 @@
+{
+  "eventId": "e-000009",
+  "timestamp": "2026-10-16T11:01:12Z",
+  "gameId": "combat",
+  "gameVersion": "1.0",
+  "matchId": "combat-001",
+  "playerId": "ana",
+  "type": "DAMAGE_DEALT",
+  "data": {
+    "target": "luis",
+    "amount": 40,
+    "weapon": "rifle"
+  }
+}

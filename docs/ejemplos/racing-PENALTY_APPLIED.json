@@ -1,0 +1,14 @@
+{
+  "eventId": "e-000005",
+  "timestamp": "2026-10-16T10:02:45Z",
+  "gameId": "racing",
+  "gameVersion": "1.0",
+  "matchId": "racing-001",
+  "playerId": "sofia",
+  "type": "PENALTY_APPLIED",
+  "data": {
+    "lap": 2,
+    "seconds": 5,
+    "reason": "corte de pista"
+  }
+}

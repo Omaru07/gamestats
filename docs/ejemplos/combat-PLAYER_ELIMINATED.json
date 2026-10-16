@@ -1,0 +1,13 @@
+{
+  "eventId": "e-000010",
+  "timestamp": "2026-10-16T11:01:15Z",
+  "gameId": "combat",
+  "gameVersion": "1.0",
+  "matchId": "combat-001",
+  "playerId": "ana",
+  "type": "PLAYER_ELIMINATED",
+  "data": {
+    "target": "luis",
+    "weapon": "rifle"
+  }
+}

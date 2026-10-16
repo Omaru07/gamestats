@@ -1,0 +1,11 @@
+{
+  "eventId": "e-000006",
+  "timestamp": "2026-10-16T10:05:10Z",
+  "gameId": "racing",
+  "gameVersion": "1.0",
+  "matchId": "racing-001",
+  "type": "MATCH_FINISHED",
+  "data": {
+    "winner": "ana"
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "eventId": "e-000008",
+  "timestamp": "2026-10-16T11:00:01Z",
+  "gameId": "combat",
+  "gameVersion": "1.0",
+  "matchId": "combat-001",
+  "playerId": "luis",
+  "type": "PLAYER_JOINED",
+  "data": {}
+}

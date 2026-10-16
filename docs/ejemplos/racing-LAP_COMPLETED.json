@@ -1,0 +1,14 @@
+{
+  "eventId": "e-000003",
+  "timestamp": "2026-10-16T10:02:31Z",
+  "gameId": "racing",
+  "gameVersion": "1.0",
+  "matchId": "racing-001",
+  "playerId": "ana",
+  "type": "LAP_COMPLETED",
+  "data": {
+    "lap": 2,
+    "lapTimeMs": 84210,
+    "position": 3
+  }
+}

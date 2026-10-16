@@ -1,0 +1,11 @@
+{
+  "gameId": "combat",
+  "playerRequired": ["PLAYER_JOINED", "DAMAGE_DEALT", "PLAYER_ELIMINATED"],
+  "types": {
+    "MATCH_STARTED": ["players"],
+    "PLAYER_JOINED": [],
+    "DAMAGE_DEALT": ["target", "amount", "weapon"],
+    "PLAYER_ELIMINATED": ["target", "weapon"],
+    "MATCH_FINISHED": []
+  }
+}
