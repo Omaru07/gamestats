@@ -16,17 +16,37 @@ object Main extends cask.MainRoutes:
   @cask.get("/health")
   def health() = ujson.Obj("status" -> "ok")
 
-  // Recibe una partida completa de Go. Por ahora (T5) solo la lee y cuenta eventos.
+  // T10: consultar resultados.
+  @cask.get("/matches")
+  def matches() = jsonResponse(200, ResultJson.summaries(Store.all))
+
+  @cask.get("/matches/:matchId")
+  def matchById(matchId: String) =
+    Store.get(matchId) match
+      case Some(r) => jsonResponse(200, ResultJson.toJson(r))
+      case None    => jsonResponse(404, ujson.Obj("error" -> s"partida no encontrada: $matchId"))
+
+  @cask.get("/players/:gameId/:playerId")
+  def playerStats(gameId: String, playerId: String) =
+    Analyzers.playerSummary(gameId, playerId, Store.all) match
+      case Some(stats) => jsonResponse(200, ResultJson.playerSummary(gameId, playerId, stats))
+      case None        => jsonResponse(404, ujson.Obj("error" -> s"sin datos de $playerId en $gameId"))
+
+  // Recibe una partida completa de Go, la analiza, la guarda y responde.
   @cask.post("/analyze")
   def analyze(request: cask.Request) =
-    Try(Parser.matchData(ujson.read(request.text()))) match
-      case Success(m) =>
-        // groupBy agrupa los eventos por tipo; map convierte cada grupo en su cantidad.
-        val porTipo = m.events.groupBy(_.tpe).map { case (tipo, evs) => tipo -> evs.size }
-        println(s"Recibida partida ${m.matchId} (${m.gameId}): ${m.events.size} eventos")
-        println(s"  por tipo: $porTipo")
-        jsonResponse(200, ujson.Obj("matchId" -> m.matchId, "status" -> "analyzed"))
-      case Failure(e) =>
-        jsonResponse(400, ujson.Obj("error" -> s"JSON inválido: ${e.getMessage}"))
+    val parsed: Either[String, MatchData] =
+      Try(Parser.matchData(ujson.read(request.text()))).toEither.left.map(e => s"JSON inválido: ${e.getMessage}")
+
+    parsed.flatMap(Analyzers.run) match
+      case Right(result) =>
+        Store.save(result)
+        Store.writeFile(result) match
+          case Failure(e) => println(s"No se pudo escribir el archivo de ${result.matchId}: ${e.getMessage}")
+          case Success(_) => ()
+        println(Report.text(result))
+        jsonResponse(200, ujson.Obj("matchId" -> result.matchId, "status" -> "analyzed"))
+      case Left(message) =>
+        jsonResponse(400, ujson.Obj("error" -> message))
 
   initialize()

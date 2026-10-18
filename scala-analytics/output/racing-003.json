@@ -1,0 +1,42 @@
+{
+  "matchId": "racing-003",
+  "gameId": "racing",
+  "players": [
+    {
+      "playerId": "ana",
+      "lapsCompleted": 5,
+      "bestLapMs": 84547,
+      "avgLapMs": 89006.6,
+      "consistencyMs": 3959.43,
+      "avgLapMsWithPenalty": 93488.5,
+      "avgLapMsWithoutPenalty": 86018.67
+    },
+    {
+      "playerId": "luis",
+      "lapsCompleted": 5,
+      "bestLapMs": 82472,
+      "avgLapMs": 85429.4,
+      "consistencyMs": 4628.32,
+      "avgLapMsWithPenalty": 94546,
+      "avgLapMsWithoutPenalty": 83150.25
+    },
+    {
+      "playerId": "sofia",
+      "lapsCompleted": 5,
+      "bestLapMs": 84372,
+      "avgLapMs": 88507.4,
+      "consistencyMs": 3453.88,
+      "avgLapMsWithPenalty": 91083,
+      "avgLapMsWithoutPenalty": 84644
+    }
+  ],
+  "match": {
+    "durationSeconds": 446,
+    "totalLaps": 5,
+    "overtakes": 1,
+    "winner": "luis",
+    "avgLapMsWithPenalty": 92462,
+    "avgLapMsWithoutPenalty": 84438.33
+  },
+  "patterns": []
+}

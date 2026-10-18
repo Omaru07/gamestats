@@ -1,0 +1,57 @@
+{
+  "matchId": "combat-001",
+  "gameId": "combat",
+  "players": [
+    {
+      "playerId": "ana",
+      "kills": 7,
+      "deaths": 6,
+      "kd": 1.17,
+      "totalDamage": 750,
+      "avgDamagePerHit": 24.19,
+      "damagePerKill": 107.14
+    },
+    {
+      "playerId": "luis",
+      "kills": 9,
+      "deaths": 5,
+      "kd": 1.8,
+      "totalDamage": 791,
+      "avgDamagePerHit": 20.82,
+      "damagePerKill": 87.89
+    },
+    {
+      "playerId": "pedro",
+      "kills": 4,
+      "deaths": 6,
+      "kd": 0.67,
+      "totalDamage": 647,
+      "avgDamagePerHit": 21.57,
+      "damagePerKill": 161.75
+    },
+    {
+      "playerId": "sofia",
+      "kills": 3,
+      "deaths": 6,
+      "kd": 0.5,
+      "totalDamage": 413,
+      "avgDamagePerHit": 22.94,
+      "damagePerKill": 137.67
+    }
+  ],
+  "match": {
+    "durationSeconds": 238,
+    "totalKills": 23,
+    "topDamagePlayer": "luis",
+    "winner": "luis"
+  },
+  "patterns": [
+    {
+      "type": "KILL_STREAK",
+      "playerId": "ana",
+      "kills": 3,
+      "windowSeconds": 6,
+      "startedAt": "2026-10-16T10:31:00Z"
+    }
+  ]
+}

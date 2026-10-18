@@ -1,0 +1,40 @@
+{
+  "matchId": "combat-003",
+  "gameId": "combat",
+  "players": [
+    {
+      "playerId": "ana",
+      "kills": 10,
+      "deaths": 9,
+      "kd": 1.11,
+      "totalDamage": 678,
+      "avgDamagePerHit": 21.87,
+      "damagePerKill": 67.8
+    },
+    {
+      "playerId": "luis",
+      "kills": 11,
+      "deaths": 7,
+      "kd": 1.57,
+      "totalDamage": 788,
+      "avgDamagePerHit": 21.3,
+      "damagePerKill": 71.64
+    },
+    {
+      "playerId": "sofia",
+      "kills": 2,
+      "deaths": 7,
+      "kd": 0.29,
+      "totalDamage": 993,
+      "avgDamagePerHit": 24.83,
+      "damagePerKill": 496.5
+    }
+  ],
+  "match": {
+    "durationSeconds": 240,
+    "totalKills": 23,
+    "topDamagePlayer": "sofia",
+    "winner": "luis"
+  },
+  "patterns": []
+}

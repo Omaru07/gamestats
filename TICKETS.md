@@ -15,10 +15,10 @@ Cada ticket es un **corte vertical**: entrega algo que se puede ejecutar y compr
 | T2 | Go recibe y valida un evento | AFK | T1 | Mié | [X] |
 | T3 | Go agrupa por partida con goroutines | AFK | T2 | Jue | [X] |
 | T4 | Simulador de partidas en paralelo | AFK | T2 | Jue | [X] |
-| T5 | Go envía partida terminada a Scala (flujo completo) | AFK | T3, T0 | Jue | [ ] |
-| T6 | Scala: estadísticas por jugador | AFK | T5 | Vie | [ ] |
-| T7 | Scala: estadísticas por partida | AFK | T6 | Vie | [ ] |
-| T8 | Scala: estadísticas combinadas | AFK | T6 | Vie | [ ] |
+| T5 | Go envía partida terminada a Scala (flujo completo) | AFK | T3, T0 | Jue | [X] |
+| T6 | Scala: estadísticas por jugador | AFK | T5 | Vie | [X] |
+| T7 | Scala: estadísticas por partida | AFK | T6 | Vie | [X] |
+| T8 | Scala: estadísticas combinadas | AFK | T6 | Vie | [X] |
 | T9 | Scala: detección de patrones | AFK | T6 | Sáb | [ ] |
 | T10 | Consultar resultados (GET) | AFK | T7 | Sáb | [ ] |
 | T11 | Dockerfiles y docker-compose | AFK | T5 | Sáb | [ ] |
