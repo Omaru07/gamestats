@@ -220,7 +220,7 @@ Respuesta: `200 OK` con `{"matchId":"racing-001","status":"analyzed"}`. Cualquie
 - Envía los eventos por HTTP a Go con pausas pequeñas aleatorias.
 - Incluye casos especiales a propósito: una partida de combate con racha garantizada, una carrera con remontada garantizada, y algunos eventos inválidos (sin `matchId`, tipo desconocido, campo faltante, duplicado) para demostrar la validación.
 - Usa una semilla fija opcional para que la demo sea reproducible.
-- Opciones: `-seed` (semilla), `-racing` / `-combat` (cantidad de partidas), `-prefix` (prefijo de los `matchId`, para repetir sin reiniciar), `-pause` (pausa máxima entre eventos), `-dry` (imprime los eventos sin enviarlos), `-url`.
+- Opciones: `-seed` (semilla), `-racing` / `-combat` (cantidad de partidas), `-prefix` (prefijo de los `matchId`, para repetir sin reiniciar), `-pause` (pausa máxima entre eventos), `-dry` (imprime los eventos sin enviarlos), `-url`, `-scala` (al terminar consulta `GET /matches` de Scala y muestra el ganador y los patrones de cada partida; es solo lectura, el simulador no analiza nada).
 - Con la semilla 42 genera 521 eventos válidos y 5 inválidos (sin `matchId`, tipo desconocido, falta `data.amount`, `timestamp` mal formado y `eventId` duplicado).
 
 ## 11. Fuera de alcance

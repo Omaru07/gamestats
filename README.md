@@ -7,6 +7,27 @@ Sistema que recibe eventos de partidas de videojuegos (simulados), los agrupa po
 - Los dos son **servicios independientes** que se comunican por **HTTP/REST con JSON**.
 - Juegos incluidos: **carreras** (`racing`) y **combate** (`combat`). Agregar un juego no obliga a reescribir el sistema (ver [Cómo agregar un juego](#cómo-agregar-un-juego)).
 
+## Inicio rápido (para quien evalúa)
+
+**Lo único que hay que tener instalado es Docker** (Docker Desktop en Windows y macOS; Docker Engine con Compose en Linux). No hace falta instalar Go, Scala ni sbt: todo se descarga y se compila dentro de las imágenes.
+
+```powershell
+# Terminal 1: construir y arrancar Go y Scala
+docker compose up --build
+
+# Terminal 2 (cuando la 1 diga "Go escuchando en el puerto 8080" y "Scala responde OK"):
+docker compose run --rm simulator
+
+# Al terminar, en la terminal 1: Ctrl+C y luego
+docker compose down
+```
+
+- **La primera vez tarda entre 5 y 10 minutos** (descarga imágenes, sbt y las librerías de Scala) y **necesita internet**. Las siguientes veces arranca en segundos.
+- El simulador imprime: (1) la ingestión, con los eventos aceptados y los inválidos rechazados a propósito, y (2) **al final, lo que Scala analizó**: el ganador y los patrones (racha, remontada) de cada partida.
+- Para ver una partida completa: `curl http://localhost:8081/matches/combat-001` (en PowerShell, `curl.exe`) o abrir los archivos de `output/`.
+
+Si algo no arranca, ver [Problemas frecuentes](#problemas-frecuentes).
+
 ## Arquitectura
 
 ```
@@ -26,7 +47,7 @@ Sistema que recibe eventos de partidas de videojuegos (simulados), los agrupa po
 
 ## Requisitos
 
-- **Para ejecutar el sistema:** solo [Docker Desktop](https://www.docker.com/products/docker-desktop/) (incluye Docker Compose).
+- **Para ejecutar el sistema:** solo [Docker Desktop](https://www.docker.com/products/docker-desktop/) (incluye Docker Compose) y conexión a internet la primera vez. Las imágenes funcionan en procesadores Intel/AMD y ARM (Apple Silicon).
 - **Para desarrollar sin Docker:** Go 1.26+, JDK 17+ y sbt 2.0.x. Versiones usadas: Go 1.26.5, JDK 25 (21 dentro de Docker), sbt 2.0.9, Scala 3.3.7, Cask 0.11.3.
 
 ## Instalación y ejecución (Docker)
@@ -37,7 +58,7 @@ Desde la raíz del repositorio:
 # 1. Construir y arrancar Go y Scala (la primera vez tarda varios minutos)
 docker compose up --build
 
-# 2. En OTRA terminal: enviar las partidas simuladas (semilla fija 42)
+# 2. En OTRA terminal: enviar las partidas simuladas (semilla fija 42); al final muestra el análisis de Scala
 docker compose run --rm simulator
 
 # 3. Consultar resultados
@@ -58,7 +79,20 @@ docker compose run --rm simulator -seed 7 -prefix r2-   # otra simulación, sin 
 docker compose run --rm simulator -racing 5 -combat 2   # otra cantidad de partidas
 ```
 
+Otras opciones: `-pause` (pausa máxima entre eventos en ms), `-scala` (dirección de Scala para mostrar el análisis al final; dentro de Docker ya viene configurada) y `-dry` (solo imprime los eventos, sin enviarlos).
+
 Los puertos son **8080** (Go) y **8081** (Scala). Dentro de Docker, Go llega a Scala por el nombre del servicio (`http://scala-analytics:8081`), no por `localhost`.
+
+## Problemas frecuentes
+
+| Síntoma | Causa y solución |
+|---|---|
+| `Cannot connect to the Docker daemon` / `error during connect` | Docker Desktop no está abierto. Ábrelo, espera a que termine de iniciar y repite |
+| `port is already allocated` (8080 u 8081) | Otro programa usa ese puerto. Ciérralo, o usa otros: PowerShell `$env:GO_PORT=8090; $env:SCALA_PORT=8091; docker compose up` — Linux/macOS `GO_PORT=8090 SCALA_PORT=8091 docker compose up`. Luego las consultas usan esos puertos. El simulador no cambia |
+| El primer `docker compose up --build` parece detenido | Es normal: Scala descarga y compila sus dependencias (5 a 10 min la primera vez) |
+| El simulador dice `no pude conectar con Go` | Falta esperar a que la terminal 1 muestre `Go escuchando en el puerto 8080` |
+| Al repetir el simulador salen rechazos de `matchId` repetido | Go y Scala guardan las partidas en memoria. Reinicia con `docker compose down` y `up`, o usa `docker compose run --rm simulator -prefix r2-` |
+| `curl` no funciona en PowerShell | Usa `curl.exe` (en PowerShell `curl` es otro comando) |
 
 ## Ejecución sin Docker (desarrollo)
 
@@ -67,10 +101,10 @@ Tres terminales, en este orden:
 ```powershell
 cd scala-analytics ; sbt run          # 1. Scala (puerto 8081)
 cd go-ingest       ; go run .         # 2. Go (puerto 8080); debe decir "Scala responde OK"
-cd simulator       ; go run . -seed 42   # 3. Simulador
+cd simulator       ; go run . -seed 42 -scala http://localhost:8081   # 3. Simulador (muestra el análisis al final)
 ```
 
-Variables de entorno opcionales: `SCALA_URL` (Go → Scala, por defecto `http://localhost:8081`), `GAMES_DIR` (config de juegos, por defecto `../games`), `OUTPUT_DIR` (resultados de Scala, por defecto `output`), `INGEST_URL` (simulador → Go).
+Variables de entorno opcionales: `SCALA_URL` (Go → Scala, por defecto `http://localhost:8081`), `GAMES_DIR` (config de juegos, por defecto `../games`), `OUTPUT_DIR` (resultados de Scala, por defecto `output`), `INGEST_URL` y `SCALA_URL` (simulador → Go, y simulador → Scala para el informe final).
 
 ## API
 

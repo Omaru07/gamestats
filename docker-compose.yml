@@ -5,7 +5,7 @@ services:
   scala-analytics:
     build: ./scala-analytics
     ports:
-      - "8081:8081"
+      - "${SCALA_PORT:-8081}:8081" # cambiar con SCALA_PORT si el 8081 está ocupado
     environment:
       OUTPUT_DIR: /output
     volumes:
@@ -22,7 +22,7 @@ services:
       context: . # contexto en la raíz porque la imagen también copia games/
       dockerfile: go-ingest/Dockerfile
     ports:
-      - "8080:8080"
+      - "${GO_PORT:-8080}:8080" # cambiar con GO_PORT si el 8080 está ocupado
     environment:
       SCALA_URL: http://scala-analytics:8081 # por nombre de servicio, no localhost
     depends_on:
@@ -38,6 +38,7 @@ services:
     build: ./simulator
     environment:
       INGEST_URL: http://go-ingest:8080
+      SCALA_URL: http://scala-analytics:8081 # para mostrar al final lo que Scala analizó
     depends_on:
       go-ingest:
         condition: service_healthy

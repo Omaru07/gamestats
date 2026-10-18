@@ -91,6 +91,7 @@ func main() {
 	prefix := flag.String("prefix", "", "prefijo para los matchId (para repetir sin reiniciar Go, ej. -prefix r2-)")
 	maxPause := flag.Int("pause", 20, "pausa máxima entre eventos en ms (0 = sin pausa)")
 	dry := flag.Bool("dry", false, "solo imprimir los eventos, sin enviarlos")
+	scalaURL := flag.String("scala", os.Getenv("SCALA_URL"), "dirección de Scala: al final muestra lo que analizó (también variable SCALA_URL)")
 	flag.Parse()
 
 	if *seed == 0 {
@@ -179,6 +180,23 @@ func main() {
 		len(plans), total, time.Since(began).Round(time.Millisecond))
 	fmt.Printf("Aceptados (202): %d · Rechazados (400): %d (se esperaban %d a propósito)\n",
 		s.accepted.Load(), s.rejected.Load(), len(invalidEvents(*prefix))+1)
+	// 5. Mostrar lo que Scala analizó (solo lectura: el simulador no analiza nada).
+	if *scalaURL != "" {
+		ids := make([]string, 0, len(plans))
+		for _, p := range plans {
+			ids = append(ids, p.id)
+		}
+		fmt.Println("\n=== Análisis hecho por Scala ===")
+		results, err := fetchResults(client, *scalaURL, ids, 30*time.Second)
+		if err != nil {
+			fmt.Printf("(aviso: %v)\n", err)
+		}
+		if len(results) > 0 {
+			fmt.Print(formatReport(results, ids))
+		}
+		fmt.Printf("Detalle de una partida: %s/matches/%s\n", *scalaURL, ids[0])
+	}
+
 	if s.unexpected.Load() == 0 && s.errs.Load() == 0 {
 		fmt.Println("OK: todo se comportó como se esperaba.")
 	} else {
