@@ -145,6 +145,21 @@ Ejemplo de resultado (`combat-001`, resumido):
 - Estadísticas con `filter`, `groupMap`, `groupMapReduce`, `partition`, `flatMap`; patrones con `foldLeft`.
 - La lógica de análisis no conoce ni JSON ni HTTP: son funciones puras que se prueban con datos escritos a mano. JSON, memoria y servidor viven en la frontera (`Parser`, `ResultJson`, `Store`, `Main`).
 
+## Justificación técnica
+
+**¿Por qué esta división entre Go y Scala?**
+La ingestión es un flujo de eventos con estado compartido que hay que controlar paso a paso (validar, rechazar, agrupar por partida, decidir cuándo una partida está lista, reintentar). Go es imperativo y trae goroutines y channels, así que atender muchas partidas a la vez es natural. El análisis, en cambio, son transformaciones de colecciones sin efectos secundarios (filtrar, agrupar, reducir): en Scala se escriben más cortas, se prueban con datos escritos a mano y no hay estado compartido que proteger.
+
+**¿Por qué HTTP/REST con JSON entre los servicios?**
+Es simple, estándar e independiente del lenguaje; se prueba con `curl`, se empaqueta fácil en contenedores y permite que un componente externo produzca eventos sin conocer la implementación interna (el formato está en `docs/SPEC.md`).
+
+**Ventajas y límites de cada paradigma en este sistema**
+
+| | Ventajas aquí | Límites aquí |
+|---|---|---|
+| Imperativo (Go) | Control explícito del flujo y del estado; concurrencia simple con goroutines y channels; buen rendimiento | El estado compartido exige mutex y cuidado con las condiciones de carrera (se verifica con `go test -race`); más código para lo mismo que en Scala se hace en una línea |
+| Funcional (Scala) | Código declarativo e inmutable; funciones puras fáciles de probar; sin estado compartido | Curva de aprendizaje; crea colecciones intermedias (más memoria); el estado (resultados en memoria) vive en la frontera, no en el análisis |
+
 ## Cómo agregar un juego
 
 1. **Go:** crear `games/<nuevo>.json` con sus tipos de evento y los campos obligatorios de cada uno (ver `games/racing.json`). **Cero cambios de código en Go.**
@@ -185,14 +200,10 @@ El entorno de despliegue definido por el equipo es **Docker Compose**: un solo c
 ```
 gamestats/
 ├── README.md
-├── CLAUDE.md                  # contexto del proyecto para el asistente
 ├── docker-compose.yml
 ├── .github/workflows/ci.yml
 ├── docs/
 │   ├── SPEC.md                # especificación: eventos, validación, estadísticas, API
-│   ├── CONCEPTOS.md           # APIs, Go y Scala desde cero
-│   ├── TICKETS.md             # plan de trabajo
-│   ├── DEMO.md                # guion de la demo y preguntas de defensa
 │   └── ejemplos/              # un evento de cada tipo
 ├── games/                     # configuración de juegos para Go (racing.json, combat.json)
 ├── go-ingest/                 # servicio Go
