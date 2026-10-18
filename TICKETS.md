@@ -19,16 +19,14 @@ Cada ticket es un **corte vertical**: entrega algo que se puede ejecutar y compr
 | T6 | Scala: estadísticas por jugador | AFK | T5 | Vie | [X] |
 | T7 | Scala: estadísticas por partida | AFK | T6 | Vie | [X] |
 | T8 | Scala: estadísticas combinadas | AFK | T6 | Vie | [X] |
-| T9 | Scala: detección de patrones | AFK | T6 | Sáb | [ ] |
-| T10 | Consultar resultados (GET) | AFK | T7 | Sáb | [ ] |
-| T11 | Dockerfiles y docker-compose | AFK | T5 | Sáb | [ ] |
-| T12 | CI con GitHub Actions | HITL | T11 | Sáb | [ ] |
-| T13 | Documentación, demo y entrega | HITL | todos | Dom | [ ] |
-| T14 | (Extra) Tercer juego solo por configuración | AFK | T10 | Si sobra tiempo | [ ] |
+| T9 | Scala: detección de patrones | AFK | T6 | Sáb | [X] |
+| T10 | Consultar resultados (GET) | AFK | T7 | Sáb | [X] |
+| T11 | Dockerfiles y docker-compose | AFK | T5 | Sáb | [X] |
+| T12 | CI con GitHub Actions | HITL | T11 | Sáb | [X] |
+| T13 | Documentación, demo y entrega | HITL | todos | Dom | [X] |
+
 
 Camino crítico: **T0 → T1 → T2 → T3 → T5 → T6 → T7 → T10 → T11 → T13**. T4 puede hacerse en paralelo a T3. T8, T9 y T12 se pueden recortar o acortar si hay prisa, pero T8 y T9 son requisitos mínimos del enunciado, así que no se eliminan.
-
-> **Regla de corte:** si el sábado a mediodía vas atrasado, se recorta en este orden: T14, la parte de combate de T9 (quedarte solo con la racha), refinamientos de T10. Nunca se recortan T5, T11 ni T13.
 
 ---
 

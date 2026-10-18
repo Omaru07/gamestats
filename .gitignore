@@ -10,3 +10,6 @@ project/project/
 .vscode/
 # Logs
 *.log
+output/
+scala-analytics/output/
+target/

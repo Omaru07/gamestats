@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  go:
+    name: Go (compilar y probar)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go-ingest/go.mod
+      - name: go-ingest
+        working-directory: go-ingest
+        run: |
+          go vet ./...
+          go build ./...
+          go test -race ./...
+      - name: simulator
+        working-directory: simulator
+        run: |
+          go vet ./...
+          go build ./...
+          go test ./...
+
+  scala:
+    name: Scala (compilar y probar)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: sbt/setup-sbt@v1
+      - name: sbt test
+        working-directory: scala-analytics
+        run: sbt test
+
+  docker:
+    name: Imágenes Docker y smoke test
+    needs: [go, scala]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Construir las imágenes
+        run: docker compose --profile tools build
+      - name: Levantar Go y Scala
+        run: docker compose up -d --wait --wait-timeout 300
+      - name: Correr el simulador
+        run: docker compose run --rm simulator
+      - name: Comprobar que Scala analizó las partidas
+        run: |
+          n=0
+          for i in $(seq 1 30); do
+            n=$(curl -s http://localhost:8081/matches | python3 -c "import sys,json; print(len(json.load(sys.stdin)))" || echo 0)
+            echo "partidas analizadas: $n"
+            [ "$n" = "6" ] && break
+            sleep 2
+          done
+          [ "$n" = "6" ]
+          curl -s http://localhost:8081/matches/combat-001 | grep -q KILL_STREAK
+          curl -s http://localhost:8081/matches/racing-001 | grep -q COMEBACK
+      - name: Mostrar logs si algo falló
+        if: failure()
+        run: docker compose logs
+      - name: Apagar
+        if: always()
+        run: docker compose --profile tools down -v

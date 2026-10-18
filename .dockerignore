@@ -1,0 +1,8 @@
+# Contexto de la imagen de Go (raíz del repo): solo hace falta go-ingest/ y games/
+.git
+.github
+docs
+scala-analytics
+simulator
+output
+**/target

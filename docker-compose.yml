@@ -1,0 +1,44 @@
+# docker-compose.yml — levanta Go y Scala juntos. El simulador se corre aparte (perfil "tools").
+#   docker compose up --build              -> arranca Scala y Go
+#   docker compose run --rm simulator      -> manda las partidas simuladas
+services:
+  scala-analytics:
+    build: ./scala-analytics
+    ports:
+      - "8081:8081"
+    environment:
+      OUTPUT_DIR: /output
+    volumes:
+      - ./output:/output # los resultados JSON quedan en ./output
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8081/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 40
+      start_period: 20s
+
+  go-ingest:
+    build:
+      context: . # contexto en la raíz porque la imagen también copia games/
+      dockerfile: go-ingest/Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SCALA_URL: http://scala-analytics:8081 # por nombre de servicio, no localhost
+    depends_on:
+      scala-analytics:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/health"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  simulator:
+    build: ./simulator
+    environment:
+      INGEST_URL: http://go-ingest:8080
+    depends_on:
+      go-ingest:
+        condition: service_healthy
+    profiles: ["tools"] # no arranca con "up"; se usa con "run"
