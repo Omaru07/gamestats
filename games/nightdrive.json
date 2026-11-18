@@ -1,0 +1,12 @@
+{
+  "gameId": "nightdrive",
+  "playerRequired": ["PLAYER_JOINED", "LANE_CHANGED", "CAR_DODGED", "CRASHED"],
+  "types": {
+    "MATCH_STARTED": ["players", "lanes", "lives"],
+    "PLAYER_JOINED": [],
+    "LANE_CHANGED": ["from", "to"],
+    "CAR_DODGED": ["score", "speed"],
+    "CRASHED": ["livesLeft", "score", "speed"],
+    "MATCH_FINISHED": ["result"]
+  }
+}

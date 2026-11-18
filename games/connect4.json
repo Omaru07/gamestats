@@ -1,0 +1,11 @@
+{
+  "gameId": "connect4",
+  "playerRequired": ["PLAYER_JOINED", "MOVE", "AI_DECISION"],
+  "types": {
+    "MATCH_STARTED": ["players", "difficulty"],
+    "PLAYER_JOINED": [],
+    "MOVE": ["column", "row", "piece", "moveNumber"],
+    "AI_DECISION": ["column", "board", "score", "nodesExplored", "depth", "thinkMs", "reason"],
+    "MATCH_FINISHED": ["result"]
+  }
+}
