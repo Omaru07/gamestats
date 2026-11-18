@@ -185,3 +185,52 @@ func (g *Manager) List() []MatchInfo {
 	sort.Slice(out, func(i, j int) bool { return out[i].MatchID < out[j].MatchID })
 	return out
 }
+
+// GameInstances es lo que muestra GET /instances para un juego: cuántas partidas
+// (instancias) se han iniciado y en qué estado está cada una. No es una estadística
+// del juego: es el estado de la ingestión, que solo Go conoce mientras se juega.
+type GameInstances struct {
+	GameID   string `json:"gameId"`
+	Total    int    `json:"total"`
+	Active   int    `json:"active"`
+	Complete int    `json:"complete"`
+	Sent     int    `json:"sent"`
+	Failed   int    `json:"failed"`
+}
+
+// Counts cuenta las partidas por juego y estado. Incluye con ceros los juegos de
+// "known" que todavía no tienen partidas, para que el panel siempre los muestre.
+func (g *Manager) Counts(known []string) []GameInstances {
+	byGame := make(map[string]*GameInstances)
+	get := func(id string) *GameInstances {
+		if c, ok := byGame[id]; ok {
+			return c
+		}
+		c := &GameInstances{GameID: id}
+		byGame[id] = c
+		return c
+	}
+	for _, id := range known {
+		get(id)
+	}
+	for _, info := range g.List() { // List ya toma los mutex necesarios
+		c := get(info.GameID)
+		c.Total++
+		switch info.Status {
+		case "ACTIVE":
+			c.Active++
+		case "COMPLETE":
+			c.Complete++
+		case "SENT":
+			c.Sent++
+		case "FAILED":
+			c.Failed++
+		}
+	}
+	out := make([]GameInstances, 0, len(byGame))
+	for _, c := range byGame {
+		out = append(out, *c)
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].GameID < out[j].GameID })
+	return out
+}

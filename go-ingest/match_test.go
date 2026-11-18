@@ -204,6 +204,51 @@ func TestScalaCaidoMarcaFailed(t *testing.T) {
 	}
 }
 
+// Counts separa las partidas por juego y estado, e incluye con ceros los juegos sin partidas.
+func TestCountsPorJuegoYEstado(t *testing.T) {
+	g, _ := nuevoManager(0)
+	mustSubmit(t, g, ev("1", "c4-a", "connect4", "MATCH_STARTED", ""))
+	mustSubmit(t, g, ev("2", "c4-b", "connect4", "MATCH_STARTED", ""))
+	mustSubmit(t, g, ev("3", "sn-a", "snake", "MATCH_STARTED", ""))
+	mustSubmit(t, g, ev("4", "c4-a", "connect4", "MATCH_FINISHED", ""))
+	esperar(t, func() bool { return infoDe(g, "c4-a").Status == "SENT" })
+
+	counts := g.Counts([]string{"connect4", "nightdrive", "snake"})
+	if len(counts) != 3 {
+		t.Fatalf("esperaba 3 juegos, hay %d: %+v", len(counts), counts)
+	}
+	quiero := []GameInstances{
+		{GameID: "connect4", Total: 2, Active: 1, Sent: 1},
+		{GameID: "nightdrive"}, // configurado pero sin partidas: aparece en ceros
+		{GameID: "snake", Total: 1, Active: 1},
+	}
+	for i, q := range quiero {
+		if counts[i] != q {
+			t.Errorf("juego %d: obtuve %+v, esperaba %+v", i, counts[i], q)
+		}
+	}
+}
+
+// Contar mientras llegan eventos de varias partidas no debe tener condiciones de carrera (-race).
+func TestCountsConcurrente(t *testing.T) {
+	g, _ := nuevoManager(0)
+	var wg sync.WaitGroup
+	for p := 0; p < 10; p++ {
+		wg.Add(1)
+		go func(p int) {
+			defer wg.Done()
+			id := fmt.Sprintf("P%d", p)
+			g.Submit(ev("s"+id, id, "snake", "MATCH_STARTED", ""))
+			g.Counts(nil)
+			g.Submit(ev("f"+id, id, "snake", "MATCH_FINISHED", ""))
+		}(p)
+	}
+	wg.Wait()
+	if c := g.Counts(nil); len(c) != 1 || c[0].Total != 10 {
+		t.Errorf("esperaba 10 partidas de snake, obtuve %+v", c)
+	}
+}
+
 func TestReintentaYTerminaSent(t *testing.T) {
 	g, r := nuevoManager(2) // falla 2 veces y a la tercera funciona
 	mustSubmit(t, g, ev("1", "A", "racing", "MATCH_STARTED", ""))

@@ -48,6 +48,7 @@ func main() {
 	http.HandleFunc("/events", eventsHandler(validator, manager))
 	http.HandleFunc("/invalid", invalidHandler(validator))
 	http.HandleFunc("/matches", matchesHandler(manager))
+	http.HandleFunc("/instances", instancesHandler(manager, gameIDs(games)))
 
 	go checkScala() // en una goroutine para no retrasar el arranque
 
