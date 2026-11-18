@@ -1,5 +1,5 @@
-# docker-compose.yml — levanta Go y Scala juntos. El simulador se corre aparte (perfil "tools").
-#   docker compose up --build              -> arranca Scala y Go
+# docker-compose.yml — levanta Go, Scala y la IA de Prolog. El simulador se corre aparte (perfil "tools").
+#   docker compose up --build              -> arranca Scala, Go y Prolog
 #   docker compose run --rm simulator      -> manda las partidas simuladas
 services:
   scala-analytics:
@@ -33,6 +33,18 @@ services:
       interval: 3s
       timeout: 3s
       retries: 20
+
+  prolog-ai:
+    build: ./prolog-ai # las pruebas de Prolog corren al construir esta imagen
+    ports:
+      - "${PROLOG_PORT:-8082}:8082" # cambiar con PROLOG_PORT si el 8082 está ocupado
+    healthcheck:
+      # La imagen de SWI-Prolog no trae curl ni wget: el chequeo lo hace el mismo Prolog.
+      test: ["CMD", "swipl", "-g", "use_module(library(http/http_open)),http_open('http://localhost:8082/health',S,[]),close(S)", "-t", "halt"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
 
   simulator:
     build: ./simulator
