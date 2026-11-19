@@ -1,0 +1,86 @@
+:root {
+  color-scheme: dark;
+  --fondo: #14161c;
+  --panel: #1e2129;
+  --borde: #2e323d;
+  --texto: #e7e9ee;
+  --tenue: #9aa0ad;
+  --acento: #4f8cff;
+  --ok: #3fb950;
+  --error: #f85149;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+body {
+  margin: 0;
+}
+
+#app {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+}
+
+.tenue {
+  color: var(--tenue);
+}
+
+.tarjeta {
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+button {
+  background: var(--acento);
+  color: white;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font: inherit;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.1);
+}
+
+input {
+  background: var(--fondo);
+  color: var(--texto);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font: inherit;
+}
+
+pre {
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 10px;
+  overflow: auto;
+  font-size: 0.85rem;
+}
+
+.partida-prueba {
+  font-family: ui-monospace, Consolas, monospace;
+  padding: 4px 0;
+}
+
+.ok {
+  color: var(--ok);
+}
+
+.error {
+  color: var(--error);
+}
