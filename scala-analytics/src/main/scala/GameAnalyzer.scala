@@ -6,9 +6,21 @@ trait GameAnalyzer:
   // Estadísticas acumuladas de un jugador a lo largo de todas sus partidas (T10).
   def accumulate(playerId: String, history: List[(MatchResult, PlayerStats)]): Stats
 
+  // Estadísticas del juego completo, juntando todas sus partidas analizadas (Proyecto 2).
+  // Esta versión sirve para cualquier juego; cada analizador puede agregarle las suyas
+  // (override ... = super.gameSummary(results) ++ Calc.stats(...)).
+  def gameSummary(results: List[MatchResult]): Stats =
+    Calc.stats(
+      Calc.num("matches", results.size),
+      Calc.numOpt("avgDurationSeconds", Calc.meanOf(results, "durationSeconds")),
+      Calc.num("distinctPlayers", Overview.humanPlayers(results).size),
+      Calc.num("patternsDetected", results.map(_.patterns.size).sum)
+    )
+
 object Analyzers:
   // Para agregar un juego nuevo: crear su Analyzer y añadirlo a esta lista. Nada más cambia.
-  val all: List[GameAnalyzer] = List(RacingAnalyzer, CombatAnalyzer)
+  val all: List[GameAnalyzer] =
+    List(RacingAnalyzer, CombatAnalyzer, Connect4Analyzer, SnakeAnalyzer, NightDriveAnalyzer)
 
   private val byGame: Map[String, GameAnalyzer] = all.map(a => a.gameId -> a).toMap
 
@@ -28,3 +40,11 @@ object Analyzers:
         .flatMap(r => r.players.find(_.playerId == playerId).map(ps => (r, ps)))
       if history.nonEmpty
     yield analyzer.accumulate(playerId, history)
+
+  // Resumen de un juego con sus partidas; None si el juego no tiene analizador.
+  def gameSummary(gameId: String, results: List[MatchResult]): Option[Stats] =
+    byGame.get(gameId).map(a => a.gameSummary(results.filter(_.gameId == gameId)))
+
+  // El resumen de cada juego registrado (también los que aún no tienen partidas).
+  def allSummaries(results: List[MatchResult]): List[(String, Stats)] =
+    all.map(a => a.gameId -> a.gameSummary(results.filter(_.gameId == a.gameId)))
