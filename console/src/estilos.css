@@ -18,7 +18,7 @@ body {
 }
 
 #app {
-  max-width: 960px;
+  max-width: 1500px;
   margin: 0 auto;
   padding: 24px;
 }
@@ -248,4 +248,212 @@ pre {
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 8px;
+}
+
+/* ---------- Consola: juegos a la izquierda, panel a la derecha ---------- */
+.encabezado {
+  margin-bottom: 8px;
+}
+
+.encabezado p {
+  margin: 0;
+}
+
+.distribucion {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1000px) {
+  .distribucion {
+    grid-template-columns: 1fr;
+  }
+}
+
+.consola-jugador {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.consola-juegos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.juego-tarjeta h3 {
+  margin: 0 0 4px;
+}
+
+.juego-tarjeta p {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+}
+
+.juego-connect4 {
+  border-top: 3px solid rgb(41 128 185);
+}
+
+.juego-snake {
+  border-top: 3px solid rgb(76 175 80);
+}
+
+.juego-nightdrive {
+  border-top: 3px solid #ff2fd0;
+}
+
+.juego-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+button.secundario {
+  background: #3a3f4b;
+}
+
+.consola-subtitulo {
+  margin: 24px 0 0;
+  font-size: 1.1rem;
+}
+
+.marco-envio {
+  margin-left: auto;
+  font-size: 0.8rem;
+}
+
+.marco-resultado {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: #3a3f4b;
+}
+
+.resultado-WIN {
+  background: #1f6f3a;
+}
+
+.resultado-LOSS {
+  background: #6f2a2a;
+}
+
+/* ---------- Panel de estadísticas ---------- */
+.panel {
+  position: sticky;
+  top: 16px;
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 16px;
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+}
+
+.panel-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.panel-cabecera h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.panel-estado {
+  font-size: 0.75rem;
+}
+
+.panel-bloque {
+  border-top: 1px solid var(--borde);
+  margin-top: 14px;
+  padding-top: 10px;
+}
+
+.panel-bloque h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+}
+
+.panel dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.panel dt {
+  color: var(--tenue);
+}
+
+.panel dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.panel-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.panel-tabla th,
+.panel-tabla td {
+  padding: 4px 6px;
+  text-align: right;
+  border-bottom: 1px solid var(--borde);
+}
+
+.panel-tabla th:first-child,
+.panel-tabla td:first-child {
+  text-align: left;
+}
+
+.panel-tabla th {
+  color: var(--tenue);
+  font-weight: 500;
+}
+
+.panel-total {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: var(--tenue);
+}
+
+.panel-lista {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-size: 0.8rem;
+}
+
+.panel-pestanas {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.panel-pestanas button {
+  flex: 1;
+  padding: 6px 4px;
+  font-size: 0.8rem;
+  background: #3a3f4b;
+}
+
+.panel-pestanas button[aria-selected='true'] {
+  background: var(--acento);
+}
+
+.panel-nota {
+  margin: 14px 0 0;
+  font-size: 0.75rem;
 }
