@@ -1,10 +1,7 @@
-// Página TEMPORAL de los pasos 3 y 4: prueba de conexión y Conecta 4.
-// En el Paso 5 se reemplaza por la consola real con los 3 juegos y el panel.
+// Página TEMPORAL del Paso 5: los 3 juegos. En el Paso 7 se reemplaza por la consola
+// real (menú, pestañas y panel de estadísticas).
 import './estilos.css';
 import type { Juego } from './core/Juego.ts';
-import { Jugador } from './core/Jugador.ts';
-import { Partida } from './core/Partida.ts';
-import { PartidaDePrueba } from './dev/PartidaDePrueba.ts';
 import { DespachadorEventos } from './events/DespachadorEventos.ts';
 import { crearCatalogo } from './games/catalogo.ts';
 
@@ -15,17 +12,12 @@ const juegos: Juego[] = [];
 const app = document.querySelector<HTMLDivElement>('#app')!;
 app.innerHTML = `
   <h1>GameConsole</h1>
-  <p class="tenue">Página de prueba (pasos 3 y 4)</p>
+  <p class="tenue">Página de prueba (Paso 5): los 3 juegos. Puedes abrir varias partidas a la vez.</p>
 
   <section class="tarjeta">
     <label>Tu nombre <input id="nombre" value="Omar" /></label>
-  </section>
-
-  <section class="tarjeta">
-    <strong>Conecta 4 contra la computadora</strong>
-    <p class="tenue">La computadora decide con minimax en Prolog. Puedes abrir varias partidas a la vez.</p>
-    <button id="c4">Nueva partida de Conecta 4</button>
-    <div id="zona-c4" class="partidas"></div>
+    <div id="lanzadores" class="lanzadores"></div>
+    <div id="zona" class="partidas"></div>
   </section>
 
   <section class="tarjeta">
@@ -37,22 +29,25 @@ app.innerHTML = `
     <strong>Instancias según GameStats</strong> <span class="tenue">(GET /api/ingest/instances, cada 2 s)</span>
     <pre id="instancias">Consultando…</pre>
   </section>
-
-  <section class="tarjeta">
-    <strong>Prueba de conexión</strong>
-    <p class="tenue">Simula una culebrita que come 3 veces y choca con la pared.</p>
-    <button id="una">Lanzar 1 partida de prueba</button>
-    <button id="cinco">Lanzar 5 a la vez</button>
-    <div id="zona-prueba"></div>
-  </section>
 `;
 
 const nombre = app.querySelector<HTMLInputElement>('#nombre')!;
+const zona = app.querySelector<HTMLDivElement>('#zona')!;
 const envio = app.querySelector<HTMLParagraphElement>('#envio')!;
 const instancias = app.querySelector<HTMLPreElement>('#instancias')!;
 
+// Un botón por cada juego del catálogo.
+for (const def of catalogo.todos()) {
+  const boton = document.createElement('button');
+  boton.textContent = `Nueva partida: ${def.nombre}`;
+  boton.title = def.descripcion;
+  boton.addEventListener('click', () => abrir(def.gameId, def.nombre));
+  app.querySelector('#lanzadores')!.append(boton);
+}
+
 // Cada partida vive en su propio marco, con un botón para cerrarla.
-function abrir(juego: Juego, zona: HTMLElement, titulo: string): void {
+function abrir(gameId: string, titulo: string): void {
+  const juego = catalogo.nuevaPartida(gameId, nombre.value, despachador);
   const marco = document.createElement('article');
   marco.className = 'marco-partida';
   const cabecera = document.createElement('header');
@@ -70,21 +65,6 @@ function abrir(juego: Juego, zona: HTMLElement, titulo: string): void {
   juegos.push(juego);
   juego.comenzar(cuerpo);
 }
-
-app.querySelector('#c4')!.addEventListener('click', () => {
-  const juego = catalogo.nuevaPartida('connect4', nombre.value, despachador);
-  abrir(juego, app.querySelector<HTMLDivElement>('#zona-c4')!, 'Conecta 4');
-});
-
-function lanzarPrueba(cantidad: number): void {
-  for (let i = 0; i < cantidad; i++) {
-    const juego = new PartidaDePrueba(new Partida('snake', [new Jugador(nombre.value)]), despachador);
-    juegos.push(juego);
-    juego.comenzar(app.querySelector<HTMLDivElement>('#zona-prueba')!);
-  }
-}
-app.querySelector('#una')!.addEventListener('click', () => lanzarPrueba(1));
-app.querySelector('#cinco')!.addEventListener('click', () => lanzarPrueba(5));
 
 despachador.suscribir(() => {
   const t = despachador.totales();

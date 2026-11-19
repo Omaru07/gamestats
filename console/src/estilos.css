@@ -202,3 +202,50 @@ pre {
   margin: 8px 0 0;
   font-size: 0.85rem;
 }
+
+/* ---------- Culebrita (colores de VentanaSnake.java) ---------- */
+.snake-info,
+.ruta-info {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.snake-canvas,
+.ruta-canvas {
+  display: block;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+}
+
+.snake-canvas:focus-visible,
+.ruta-canvas:focus-visible,
+.snake-canvas:focus,
+.ruta-canvas:focus {
+  box-shadow: 0 0 0 3px var(--acento);
+}
+
+.snake-ayuda,
+.ruta-ayuda {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  max-width: 360px;
+}
+
+/* ---------- Ruta Nocturna ---------- */
+.ruta-canvas {
+  image-rendering: pixelated;
+  border: 2px solid #2a2140;
+}
+
+.ruta-info {
+  font-family: ui-monospace, Consolas, monospace;
+  color: #ff8ae6;
+}
+
+.lanzadores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
