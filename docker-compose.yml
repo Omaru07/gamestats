@@ -1,5 +1,6 @@
-# docker-compose.yml — levanta Go, Scala y la IA de Prolog. El simulador se corre aparte (perfil "tools").
-#   docker compose up --build              -> arranca Scala, Go y Prolog
+# docker-compose.yml — levanta todo el sistema: GameStats (Go y Scala), la IA de Prolog y la
+# consola web (http://localhost:8000). El simulador se corre aparte (perfil "tools").
+#   docker compose up --build              -> arranca Scala, Go, Prolog y la consola
 #   docker compose run --rm simulator      -> manda las partidas simuladas
 services:
   scala-analytics:
@@ -45,6 +46,23 @@ services:
       timeout: 5s
       retries: 20
       start_period: 5s
+
+  console:
+    build: ./console
+    ports:
+      - "${CONSOLE_PORT:-8000}:80" # la consola queda en http://localhost:8000
+    depends_on:
+      go-ingest:
+        condition: service_healthy
+      scala-analytics:
+        condition: service_healthy
+      prolog-ai:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1/"] # 127.0.0.1: en alpine "localhost" puede ir por IPv6
+      interval: 3s
+      timeout: 3s
+      retries: 20
 
   simulator:
     build: ./simulator
