@@ -40,15 +40,40 @@ jobs:
         working-directory: scala-analytics
         run: sbt test
 
+  console:
+    name: Consola web (pruebas y compilación)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: console/package-lock.json
+      - name: npm ci, test y build
+        working-directory: console
+        run: |
+          npm ci
+          npm test
+          npm run build
+
+  prolog:
+    name: IA en Prolog (plunit)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Pruebas de la IA de Conecta 4
+        run: docker run --rm -v "$PWD/prolog-ai:/app" -w /app swipl:stable swipl -g run_tests -t halt tests.pl
+
   docker:
     name: Imágenes Docker y smoke test
-    needs: [go, scala]
+    needs: [go, scala, console, prolog]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - name: Construir las imágenes
         run: docker compose --profile tools build
-      - name: Levantar Go y Scala
+      - name: Levantar todo (Go, Scala, Prolog y la consola)
         run: docker compose up -d --wait --wait-timeout 300
       - name: Correr el simulador
         run: docker compose run --rm simulator
@@ -64,9 +89,35 @@ jobs:
           [ "$n" = "6" ]
           curl -s http://localhost:8081/matches/combat-001 | grep -q KILL_STREAK
           curl -s http://localhost:8081/matches/racing-001 | grep -q COMEBACK
+      # Va después del chequeo anterior, que espera exactamente las 6 partidas del simulador.
+      - name: Smoke test de la consola (Proyecto 2)
+        run: bash scripts/smoke-consola.sh http://localhost:8000
       - name: Mostrar logs si algo falló
         if: failure()
         run: docker compose logs
       - name: Apagar
         if: always()
         run: docker compose --profile tools down -v
+
+  publicar:
+    name: CD — publicar imágenes en GitHub Container Registry
+    needs: [docker]
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/proyecto2')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Iniciar sesión en ghcr.io
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+      - name: Construir y publicar las 4 imágenes
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          docker compose build go-ingest scala-analytics prolog-ai console
+          for s in go-ingest scala-analytics prolog-ai console; do
+            for tag in latest "${GITHUB_SHA::7}"; do
+              docker tag "gamestats-$s" "ghcr.io/$OWNER/gamestats-$s:$tag"
+              docker push "ghcr.io/$OWNER/gamestats-$s:$tag"
+            done
+          done
