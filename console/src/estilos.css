@@ -84,3 +84,121 @@ pre {
 .error {
   color: var(--error);
 }
+
+/* ---------- Partidas en pantalla ---------- */
+.partidas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.marco-partida {
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.marco-partida header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
+.marco-partida header button {
+  padding: 4px 10px;
+  background: #3a3f4b;
+}
+
+/* ---------- Conecta 4 (colores de VentanaConecta4.java) ---------- */
+.c4 {
+  --c4-vacio: rgb(245 245 245);
+  --c4-jugador: rgb(220 20 60);
+  --c4-computadora: rgb(255 193 7);
+  --c4-fondo: rgb(41 128 185);
+  --c4-borde: rgb(25 25 112);
+  width: 380px;
+}
+
+.c4-estado {
+  min-height: 2.6em;
+  margin: 0 0 8px;
+  font-weight: 600;
+  color: rgb(120 170 220);
+}
+
+.c4-estado[data-tipo='pensando'] {
+  color: var(--tenue);
+}
+
+.c4-estado[data-tipo='error'] {
+  color: var(--error);
+}
+
+.c4-estado[data-final='si'] {
+  color: var(--texto);
+  font-size: 1.1rem;
+}
+
+.c4-columnas {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.c4-columnas button {
+  padding: 6px 0;
+  background: rgb(100 149 237);
+  font-size: 1rem;
+}
+
+.c4-columnas button:hover:not(:disabled) {
+  background: rgb(70 130 200);
+}
+
+.c4-columnas button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.c4-tablero {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  padding: 8px;
+  background: var(--c4-fondo);
+  border: 4px solid var(--c4-borde);
+  border-radius: 8px;
+}
+
+.c4-celda {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--c4-vacio);
+  border: 2px solid rgb(200 200 200);
+  transition: background 0.2s;
+}
+
+.c4-celda.c4-jugador {
+  background: var(--c4-jugador);
+}
+
+.c4-celda.c4-computadora {
+  background: var(--c4-computadora);
+}
+
+.c4-celda.c4-ganadora {
+  border-color: white;
+  box-shadow: 0 0 0 3px white, 0 0 12px white;
+}
+
+.c4-decision {
+  min-height: 2.6em;
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+}
