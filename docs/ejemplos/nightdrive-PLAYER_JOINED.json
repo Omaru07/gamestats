@@ -1,0 +1,10 @@
+{
+  "eventId": "8b12e1c4-5a7f-4e2b-9d3c-0f6a00000012",
+  "timestamp": "2026-11-19T15:11:05.123Z",
+  "gameId": "nightdrive",
+  "gameVersion": "1.0",
+  "matchId": "c81b5e4f-27a9-4d30-8f6c-5e2a1b9d7c04",
+  "playerId": "omar",
+  "type": "PLAYER_JOINED",
+  "data": {}
+}
