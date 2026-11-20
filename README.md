@@ -199,7 +199,7 @@ gamestats/
 
 ## Video de demostración
 
-**Link:** _(pendiente: agregar aquí el link público del video)_
+(https://www.youtube.com/watch?v=ltbXUalT5ls)
 
 ---
 
