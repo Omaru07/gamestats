@@ -6,3 +6,6 @@ scala-analytics
 simulator
 output
 **/target
+console
+prolog-ai
+**/node_modules

@@ -1,0 +1,11 @@
+{
+  "eventId": "8b10e1c4-5a7f-4e2b-9d3c-0f6a00000010",
+  "timestamp": "2026-11-19T15:14:05.123Z",
+  "gameId": "snake",
+  "gameVersion": "1.0",
+  "matchId": "a3d94c27-8e15-4b6a-b0f2-91c5e7d3a648",
+  "type": "MATCH_FINISHED",
+  "data": {
+    "result": "LOSS"
+  }
+}

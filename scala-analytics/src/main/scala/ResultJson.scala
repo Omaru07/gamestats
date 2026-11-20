@@ -35,6 +35,18 @@ object ResultJson:
   def playerSummary(gameId: String, playerId: String, stats: Stats): ujson.Value =
     addStats(ujson.Obj("gameId" -> ujson.Str(gameId), "playerId" -> ujson.Str(playerId)), stats)
 
+  // Resumen de un juego, para GET /games/{gameId}/stats.
+  def gameSummary(gameId: String, stats: Stats): ujson.Value =
+    addStats(ujson.Obj("gameId" -> ujson.Str(gameId)), stats)
+
+  // Panel completo, para GET /stats: lo general y el resumen de cada juego, por separado.
+  def overview(general: Stats, byGame: List[(String, Stats)]): ujson.Value =
+    val games: ujson.Value = ujson.Arr(byGame.map { case (g, s) => gameSummary(g, s) }*)
+    ujson.Obj(
+      "general" -> addStats(ujson.Obj(), general),
+      "games" -> games
+    )
+
   def toJson(r: MatchResult): ujson.Value =
     val players: ujson.Value = ujson.Arr(r.players.map(playerJson)*)
     val summary: ujson.Value = addStats(ujson.Obj(), r.summary)

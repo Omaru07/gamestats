@@ -32,6 +32,19 @@ object Main extends cask.MainRoutes:
       case Some(stats) => jsonResponse(200, ResultJson.playerSummary(gameId, playerId, stats))
       case None        => jsonResponse(404, ujson.Obj("error" -> s"sin datos de $playerId en $gameId"))
 
+  // Proyecto 2: lo que consulta el panel de la consola. La consola solo muestra estos
+  // valores; todos los cálculos se hacen aquí.
+  @cask.get("/stats")
+  def stats() =
+    val results = Store.all
+    jsonResponse(200, ResultJson.overview(Overview.general(results), Analyzers.allSummaries(results)))
+
+  @cask.get("/games/:gameId/stats")
+  def gameStats(gameId: String) =
+    Analyzers.gameSummary(gameId, Store.all) match
+      case Some(stats) => jsonResponse(200, ResultJson.gameSummary(gameId, stats))
+      case None        => jsonResponse(404, ujson.Obj("error" -> s"juego no soportado: $gameId"))
+
   // Recibe una partida completa de Go, la analiza, la guarda y responde.
   @cask.post("/analyze")
   def analyze(request: cask.Request) =

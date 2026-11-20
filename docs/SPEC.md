@@ -1,6 +1,6 @@
 # SPEC — GameStats
 
-Versión mínima viable. Responde a las secciones 3 a 9 del enunciado.
+Versión mínima viable. Responde a las secciones 3 a 9 del enunciado del Proyecto 1. Lo que agregó el Proyecto 2 (GameConsole) está en la [§14](#14-proyecto-2-gameconsole).
 
 ## 1. Objetivo
 Recibir eventos de partidas simuladas de dos juegos (carreras y combate), agruparlos por partida, analizarlos con programación funcional y exponer estadísticas y patrones detectados.
@@ -30,7 +30,7 @@ Responsabilidades:
 |---|---|---|---|
 | `eventId` | string | sí | Único (ej. `e-000123`) |
 | `timestamp` | string ISO-8601 UTC | sí | Cuándo ocurrió |
-| `gameId` | string | sí | `racing` o `combat` |
+| `gameId` | string | sí | `racing` o `combat` (simulador); `connect4`, `snake` o `nightdrive` (consola, §14) |
 | `gameVersion` | string | sí | ej. `1.0` |
 | `matchId` | string | sí | Identifica la partida |
 | `playerId` | string | depende del tipo | Obligatorio salvo `MATCH_STARTED` y `MATCH_FINISHED` |
@@ -137,6 +137,7 @@ Respuestas de `POST /events`:
 - Al recibir `MATCH_FINISHED`, la goroutine ordena los eventos por `timestamp` (orden estable: ante la misma hora se respeta el orden de llegada), arma el JSON y hace `POST /analyze` a Scala. Se hacen **3 intentos** en total, con 1 segundo de espera entre ellos.
 - Estados de una partida: `ACTIVE` (recibiendo eventos) → `COMPLETE` (terminó; se está enviando) → `SENT` (Scala respondió 200) o `FAILED` (Scala no respondió tras 3 intentos; no se reenvía sola).
 - `GET /matches` devuelve cada partida con su estado, cantidad de eventos y jugadores vistos.
+- `GET /instances` (Proyecto 2) cuenta las partidas de cada juego configurado por estado: `{"total": n, "games": [{"gameId", "total", "active", "complete", "sent", "failed"}]}`. Es estado de la ingestión, no una estadística: es lo único que se sabe de una partida mientras todavía se juega.
 
 ## 6. Contrato Go → Scala
 `POST http://scala-analytics:8081/analyze`
@@ -206,6 +207,8 @@ Respuesta: `200 OK` con `{"matchId":"racing-001","status":"analyzed"}`. Cualquie
 | `GET /health` | `{"status":"ok"}` |
 | `GET /matches` | Lista de resultados de todas las partidas analizadas (resumen: `matchId`, `gameId`, cantidad de jugadores, `match` y `patterns`) |
 | `GET /matches/{matchId}` | Resultado completo de una partida; `404` con `{"error":...}` si no existe |
+| `GET /games/{gameId}/stats` | (Proyecto 2) Resumen del juego con todas sus partidas analizadas (§14.3); `404` si el juego no tiene analizador |
+| `GET /stats` | (Proyecto 2) `{"general": {...}, "games": [{"gameId", ...}]}`: estadísticas generales y el resumen de cada juego, por separado |
 | `GET /players/{gameId}/{playerId}` | Estadísticas acumuladas del jugador en todas sus partidas de ese juego (carreras: partidas, victorias, vueltas, mejor vuelta, promedio ponderado; combate: partidas, victorias, eliminaciones, muertes, K/D recalculado, daño); `404` si no hay datos |
 
 `POST /analyze` lo usa Go (§6); responde `400` si el JSON es inválido o si el juego no tiene analizador. Además, cada resultado se escribe en `output/<matchId>.json`.
@@ -224,7 +227,7 @@ Respuesta: `200 OK` con `{"matchId":"racing-001","status":"analyzed"}`. Cualquie
 - Con la semilla 42 genera 521 eventos válidos y 5 inválidos (sin `matchId`, tipo desconocido, falta `data.amount`, `timestamp` mal formado y `eventId` duplicado).
 
 ## 11. Fuera de alcance
-Base de datos, autenticación, interfaz gráfica, mensajería (Kafka), más de dos juegos obligatorios, persistencia entre reinicios.
+Base de datos, autenticación, mensajería (Kafka), persistencia entre reinicios. La interfaz gráfica, que estaba fuera del alcance del Proyecto 1, la agrega la consola del Proyecto 2 (§14).
 
 ## 12. Requisitos no funcionales y entregables
 - `docker compose up --build` levanta Go, Scala y (opcional) el simulador.
@@ -244,3 +247,47 @@ Base de datos, autenticación, interfaz gráfica, mensajería (Kafka), más de d
 | 8. Combinación de tipos de evento | K/D y daño por eliminación (combate); vueltas con y sin penalización (carreras) |
 | 9. Patrón de secuencia | `Patterns.scala`: `KILL_STREAK` y `COMEBACK` |
 | 10. Consultar resultados | `GET /matches`, `/matches/{id}`, `/players/{gameId}/{playerId}` en Scala |
+
+## 14. Proyecto 2: GameConsole
+
+La consola web (`console/`) juega Conecta 4, la culebrita y Ruta Nocturna y les manda sus eventos a GameStats con este mismo contrato. Para eso se agregaron, sin cambiar el formato de los eventos:
+
+- **Go:** tres archivos de configuración (`games/connect4.json`, `snake.json`, `nightdrive.json`) y `GET /instances` (§5). Cero cambios en la validación.
+- **Scala:** un analizador por juego (`Connect4Analyzer`, `SnakeAnalyzer`, `NightDriveAnalyzer`), el método `gameSummary` del trait (§14.3), `Overview` para las estadísticas generales y las rutas `GET /games/{gameId}/stats` y `GET /stats` (§8).
+
+### 14.1 Eventos de los juegos nuevos
+
+En todos, `MATCH_STARTED` lleva `players` (lista de textos), `PLAYER_JOINED` lleva `playerId` y `MATCH_FINISHED` exige `result`: `WIN`, `LOSS`, `DRAW` o `ABANDONED`, siempre desde el punto de vista de la persona (`winner` sigue siendo opcional). `ABANDONED` lo manda la consola si la partida se cierra a medias, para que no quede abierta en Go. Un ejemplo de cada tipo está en `docs/ejemplos/`.
+
+| Juego | type | playerId | data requerida |
+|---|---|---|---|
+| `connect4` | `MATCH_STARTED` | no | `players`, `difficulty` (texto) |
+| | `MOVE` | sí | `column` (0-6), `row` (0-5, 0 = arriba), `piece` (`R` persona, `Y` computadora), `moveNumber` |
+| | `AI_DECISION` | sí (`cpu`) | `column`, `board` (42 caracteres, fila de arriba primero), `score`, `nodesExplored`, `depth`, `thinkMs`, `reason` (`win`, `block` o `minimax`) |
+| `snake` | `MATCH_STARTED` | no | `players`, `gridSize` |
+| | `FOOD_EATEN` | sí | `score`, `length` |
+| | `PLAYER_DIED` | sí | `cause` (`wall` o `self`), `score`, `length` |
+| `nightdrive` | `MATCH_STARTED` | no | `players`, `lanes`, `lives` |
+| | `LANE_CHANGED` | sí | `from`, `to` (carriles 0-3) |
+| | `CAR_DODGED` | sí | `score`, `speed` (km/h) |
+| | `CRASHED` | sí | `livesLeft`, `score`, `speed` |
+
+En `data` solo van textos, números o listas de textos, que es lo que lee `Parser.scala`. La computadora de Conecta 4 usa el `playerId` reservado `cpu`, que no se cuenta como persona en las estadísticas.
+
+### 14.2 Estadísticas por partida
+
+| | Conecta 4 | Culebrita | Ruta Nocturna |
+|---|---|---|---|
+| Por jugador | `moves`; para la IA: `avgThinkMs`, `avgNodesExplored`, `blocks`, `winningMoves` | `foodEaten`, `score`, `maxLength`, `deathCause`, **`foodPerMinute`** (combinada) | `carsDodged`, `laneChanges`, `crashes`, `maxSpeed`, `finalScore`, **`avgCrashSpeed`** (combinada) |
+| Por partida (`match`) | `durationSeconds`, `totalMoves`, `result`, `winner`, `openingColumn` (1-7), `aiAvgThinkMs`, `aiAvgNodesExplored`, `aiBlocks` | `durationSeconds`, `result`, `foodEaten`, `finalScore`, `maxLength`, `deathCause` | `durationSeconds`, `result`, `finalScore`, `carsDodged`, `crashes`, `laneChanges`, `maxSpeed` |
+| Patrón | `AI_BLOCK`: la IA tapó un 4 en línea (`column`, `at`) | `FOOD_STREAK`: 3 o más comidas en ≤ 10 s (misma agrupación que `KILL_STREAK`) | `DODGE_STREAK`: 10 o más esquives seguidos sin choque (`cars`, `seconds`; con `foldLeft`) |
+
+### 14.3 Estadísticas por juego y generales
+
+`gameSummary(results)` del trait da para cualquier juego `matches`, `avgDurationSeconds`, `distinctPlayers` y `patternsDetected`; cada analizador le suma las suyas:
+
+- **Conecta 4:** `humanWins`, `aiWins`, `draws`, `abandoned`, `avgMovesPerMatch`, `aiAvgThinkMs`, `aiAvgNodesExplored`, `aiBlocks`, `favoriteOpeningColumn`.
+- **Culebrita:** `bestScore`, `avgScore`, `avgFoodPerMatch`, `bestLength`, `wallDeaths`, `selfDeaths`, `abandoned`.
+- **Ruta Nocturna:** `bestScore`, `avgScore`, `avgCarsDodged`, `maxSpeed`, `totalCrashes`, `abandoned`.
+
+`Overview.general` junta todas las partidas: `totalMatches`, `gamesPlayed`, `distinctPlayers`, `avgDurationSeconds`, `mostPlayedGame`, `patternsDetected` y `abandonedMatches`. Como en el resto de Scala, una estadística sin datos se omite. La consola solo muestra estos valores: no recalcula nada.

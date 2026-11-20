@@ -1,0 +1,55 @@
+# docker-compose.deploy.yml — despliegue con las imágenes que publica el CD (job "publicar"
+# de .github/workflows/ci.yml) en GitHub Container Registry. No compila nada:
+#   docker compose -f docker-compose.deploy.yml pull
+#   docker compose -f docker-compose.deploy.yml up -d
+# La consola queda en http://<servidor>:8000. Para otra versión: TAG=<sha de 7 letras>.
+services:
+  scala-analytics:
+    image: ghcr.io/omaru07/gamestats-scala-analytics:${TAG:-latest}
+    environment:
+      OUTPUT_DIR: /output
+    volumes:
+      - ./output:/output
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8081/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 40
+      start_period: 20s
+    restart: unless-stopped
+
+  go-ingest:
+    image: ghcr.io/omaru07/gamestats-go-ingest:${TAG:-latest}
+    environment:
+      SCALA_URL: http://scala-analytics:8081
+    depends_on:
+      scala-analytics:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/health"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  prolog-ai:
+    image: ghcr.io/omaru07/gamestats-prolog-ai:${TAG:-latest}
+    healthcheck:
+      test: ["CMD", "swipl", "-g", "use_module(library(http/http_open)),http_open('http://localhost:8082/health',S,[]),close(S)", "-t", "halt"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: unless-stopped
+
+  console:
+    image: ghcr.io/omaru07/gamestats-console:${TAG:-latest}
+    ports:
+      - "${CONSOLE_PORT:-8000}:80"
+    depends_on:
+      go-ingest:
+        condition: service_healthy
+      scala-analytics:
+        condition: service_healthy
+      prolog-ai:
+        condition: service_healthy
+    restart: unless-stopped

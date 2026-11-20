@@ -1,0 +1,18 @@
+{
+  "eventId": "8b04e1c4-5a7f-4e2b-9d3c-0f6a00000004",
+  "timestamp": "2026-11-19T15:13:05.123Z",
+  "gameId": "connect4",
+  "gameVersion": "1.0",
+  "matchId": "6f1c2a9e-3b0d-4c8e-9a51-2d7e4b8c1f03",
+  "playerId": "cpu",
+  "type": "AI_DECISION",
+  "data": {
+    "column": 2,
+    "board": "...................................RRR.YY.",
+    "score": -4,
+    "nodesExplored": 1830,
+    "depth": 5,
+    "thinkMs": 156,
+    "reason": "block"
+  }
+}

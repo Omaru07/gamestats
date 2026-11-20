@@ -1,0 +1,15 @@
+{
+  "eventId": "8b03e1c4-5a7f-4e2b-9d3c-0f6a00000003",
+  "timestamp": "2026-11-19T15:12:05.123Z",
+  "gameId": "connect4",
+  "gameVersion": "1.0",
+  "matchId": "6f1c2a9e-3b0d-4c8e-9a51-2d7e4b8c1f03",
+  "playerId": "omar",
+  "type": "MOVE",
+  "data": {
+    "column": 3,
+    "row": 5,
+    "piece": "R",
+    "moveNumber": 1
+  }
+}

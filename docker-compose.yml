@@ -1,5 +1,6 @@
-# docker-compose.yml — levanta Go y Scala juntos. El simulador se corre aparte (perfil "tools").
-#   docker compose up --build              -> arranca Scala y Go
+# docker-compose.yml — levanta todo el sistema: GameStats (Go y Scala), la IA de Prolog y la
+# consola web (http://localhost:8000). El simulador se corre aparte (perfil "tools").
+#   docker compose up --build              -> arranca Scala, Go, Prolog y la consola
 #   docker compose run --rm simulator      -> manda las partidas simuladas
 services:
   scala-analytics:
@@ -30,6 +31,35 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8080/health"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  prolog-ai:
+    build: ./prolog-ai # las pruebas de Prolog corren al construir esta imagen
+    ports:
+      - "${PROLOG_PORT:-8082}:8082" # cambiar con PROLOG_PORT si el 8082 está ocupado
+    healthcheck:
+      # La imagen de SWI-Prolog no trae curl ni wget: el chequeo lo hace el mismo Prolog.
+      test: ["CMD", "swipl", "-g", "use_module(library(http/http_open)),http_open('http://localhost:8082/health',S,[]),close(S)", "-t", "halt"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 5s
+
+  console:
+    build: ./console
+    ports:
+      - "${CONSOLE_PORT:-8000}:80" # la consola queda en http://localhost:8000
+    depends_on:
+      go-ingest:
+        condition: service_healthy
+      scala-analytics:
+        condition: service_healthy
+      prolog-ai:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://127.0.0.1/"] # 127.0.0.1: en alpine "localhost" puede ir por IPv6
       interval: 3s
       timeout: 3s
       retries: 20

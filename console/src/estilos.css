@@ -1,0 +1,459 @@
+:root {
+  color-scheme: dark;
+  --fondo: #14161c;
+  --panel: #1e2129;
+  --borde: #2e323d;
+  --texto: #e7e9ee;
+  --tenue: #9aa0ad;
+  --acento: #4f8cff;
+  --ok: #3fb950;
+  --error: #f85149;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--fondo);
+  color: var(--texto);
+}
+
+body {
+  margin: 0;
+}
+
+#app {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+h1 {
+  margin: 0 0 4px;
+  font-size: 1.6rem;
+}
+
+.tenue {
+  color: var(--tenue);
+}
+
+.tarjeta {
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+button {
+  background: var(--acento);
+  color: white;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font: inherit;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.1);
+}
+
+input {
+  background: var(--fondo);
+  color: var(--texto);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 7px 10px;
+  font: inherit;
+}
+
+pre {
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 10px;
+  overflow: auto;
+  font-size: 0.85rem;
+}
+
+.partida-prueba {
+  font-family: ui-monospace, Consolas, monospace;
+  padding: 4px 0;
+}
+
+.ok {
+  color: var(--ok);
+}
+
+.error {
+  color: var(--error);
+}
+
+/* ---------- Partidas en pantalla ---------- */
+.partidas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.marco-partida {
+  background: var(--fondo);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 12px;
+}
+
+.marco-partida header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
+.marco-partida header button {
+  padding: 4px 10px;
+  background: #3a3f4b;
+}
+
+/* ---------- Conecta 4 (colores de VentanaConecta4.java) ---------- */
+.c4 {
+  --c4-vacio: rgb(245 245 245);
+  --c4-jugador: rgb(220 20 60);
+  --c4-computadora: rgb(255 193 7);
+  --c4-fondo: rgb(41 128 185);
+  --c4-borde: rgb(25 25 112);
+  width: 380px;
+}
+
+.c4-estado {
+  min-height: 2.6em;
+  margin: 0 0 8px;
+  font-weight: 600;
+  color: rgb(120 170 220);
+}
+
+.c4-estado[data-tipo='pensando'] {
+  color: var(--tenue);
+}
+
+.c4-estado[data-tipo='error'] {
+  color: var(--error);
+}
+
+.c4-estado[data-final='si'] {
+  color: var(--texto);
+  font-size: 1.1rem;
+}
+
+.c4-columnas {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.c4-columnas button {
+  padding: 6px 0;
+  background: rgb(100 149 237);
+  font-size: 1rem;
+}
+
+.c4-columnas button:hover:not(:disabled) {
+  background: rgb(70 130 200);
+}
+
+.c4-columnas button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.c4-tablero {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  padding: 8px;
+  background: var(--c4-fondo);
+  border: 4px solid var(--c4-borde);
+  border-radius: 8px;
+}
+
+.c4-celda {
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--c4-vacio);
+  border: 2px solid rgb(200 200 200);
+  transition: background 0.2s;
+}
+
+.c4-celda.c4-jugador {
+  background: var(--c4-jugador);
+}
+
+.c4-celda.c4-computadora {
+  background: var(--c4-computadora);
+}
+
+.c4-celda.c4-ganadora {
+  border-color: white;
+  box-shadow: 0 0 0 3px white, 0 0 12px white;
+}
+
+.c4-decision {
+  min-height: 2.6em;
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+}
+
+/* ---------- Culebrita (colores de VentanaSnake.java) ---------- */
+.snake-info,
+.ruta-info {
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+.snake-canvas,
+.ruta-canvas {
+  display: block;
+  border-radius: 6px;
+  outline: none;
+  cursor: pointer;
+}
+
+.snake-canvas:focus-visible,
+.ruta-canvas:focus-visible,
+.snake-canvas:focus,
+.ruta-canvas:focus {
+  box-shadow: 0 0 0 3px var(--acento);
+}
+
+.snake-ayuda,
+.ruta-ayuda {
+  margin: 8px 0 0;
+  font-size: 0.85rem;
+  max-width: 360px;
+}
+
+/* ---------- Ruta Nocturna ---------- */
+.ruta-canvas {
+  image-rendering: pixelated;
+  border: 2px solid #2a2140;
+}
+
+.ruta-info {
+  font-family: ui-monospace, Consolas, monospace;
+  color: #ff8ae6;
+}
+
+.lanzadores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* ---------- Consola: juegos a la izquierda, panel a la derecha ---------- */
+.encabezado {
+  margin-bottom: 8px;
+}
+
+.encabezado p {
+  margin: 0;
+}
+
+.distribucion {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 380px;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 1000px) {
+  .distribucion {
+    grid-template-columns: 1fr;
+  }
+}
+
+.consola-jugador {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.consola-juegos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.juego-tarjeta h3 {
+  margin: 0 0 4px;
+}
+
+.juego-tarjeta p {
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+}
+
+.juego-connect4 {
+  border-top: 3px solid rgb(41 128 185);
+}
+
+.juego-snake {
+  border-top: 3px solid rgb(76 175 80);
+}
+
+.juego-nightdrive {
+  border-top: 3px solid #ff2fd0;
+}
+
+.juego-botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+button.secundario {
+  background: #3a3f4b;
+}
+
+.consola-subtitulo {
+  margin: 24px 0 0;
+  font-size: 1.1rem;
+}
+
+.marco-envio {
+  margin-left: auto;
+  font-size: 0.8rem;
+}
+
+.marco-resultado {
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  background: #3a3f4b;
+}
+
+.resultado-WIN {
+  background: #1f6f3a;
+}
+
+.resultado-LOSS {
+  background: #6f2a2a;
+}
+
+/* ---------- Panel de estadísticas ---------- */
+.panel {
+  position: sticky;
+  top: 16px;
+  background: var(--panel);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  padding: 16px;
+  max-height: calc(100vh - 32px);
+  overflow: auto;
+}
+
+.panel-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.panel-cabecera h2 {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.panel-estado {
+  font-size: 0.75rem;
+}
+
+.panel-bloque {
+  border-top: 1px solid var(--borde);
+  margin-top: 14px;
+  padding-top: 10px;
+}
+
+.panel-bloque h3 {
+  margin: 0 0 8px;
+  font-size: 0.95rem;
+}
+
+.panel dl {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 12px;
+  margin: 0;
+  font-size: 0.88rem;
+}
+
+.panel dt {
+  color: var(--tenue);
+}
+
+.panel dd {
+  margin: 0;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.panel-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.panel-tabla th,
+.panel-tabla td {
+  padding: 4px 6px;
+  text-align: right;
+  border-bottom: 1px solid var(--borde);
+}
+
+.panel-tabla th:first-child,
+.panel-tabla td:first-child {
+  text-align: left;
+}
+
+.panel-tabla th {
+  color: var(--tenue);
+  font-weight: 500;
+}
+
+.panel-total {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+  color: var(--tenue);
+}
+
+.panel-lista {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  font-size: 0.8rem;
+}
+
+.panel-pestanas {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.panel-pestanas button {
+  flex: 1;
+  padding: 6px 4px;
+  font-size: 0.8rem;
+  background: #3a3f4b;
+}
+
+.panel-pestanas button[aria-selected='true'] {
+  background: var(--acento);
+}
+
+.panel-nota {
+  margin: 14px 0 0;
+  font-size: 0.75rem;
+}

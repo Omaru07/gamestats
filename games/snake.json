@@ -1,0 +1,11 @@
+{
+  "gameId": "snake",
+  "playerRequired": ["PLAYER_JOINED", "FOOD_EATEN", "PLAYER_DIED"],
+  "types": {
+    "MATCH_STARTED": ["players", "gridSize"],
+    "PLAYER_JOINED": [],
+    "FOOD_EATEN": ["score", "length"],
+    "PLAYER_DIED": ["cause", "score", "length"],
+    "MATCH_FINISHED": ["result"]
+  }
+}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 )
 
 // GameConfig son las reglas de un juego, leídas de games/<gameId>.json.
@@ -40,4 +41,14 @@ func loadGames(dir string) (map[string]GameConfig, error) {
 		games[cfg.GameID] = cfg
 	}
 	return games, nil
+}
+
+// gameIDs devuelve los gameId configurados, ordenados.
+func gameIDs(games map[string]GameConfig) []string {
+	ids := make([]string, 0, len(games))
+	for id := range games {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	return ids
 }

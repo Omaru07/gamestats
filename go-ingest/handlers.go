@@ -60,6 +60,19 @@ func matchesHandler(mgr *Manager) http.HandlerFunc {
 	}
 }
 
+// instancesHandler atiende GET /instances: partidas por juego y estado, más el total.
+// known son los juegos configurados en games/, para mostrarlos aunque tengan 0 partidas.
+func instancesHandler(mgr *Manager, known []string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		games := mgr.Counts(known)
+		total := 0
+		for _, g := range games {
+			total += g.Total
+		}
+		writeJSON(w, http.StatusOK, map[string]any{"total": total, "games": games})
+	}
+}
+
 // healthHandler responde {"status":"ok"} cuando alguien hace GET /health.
 func healthHandler(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, http.StatusOK, map[string]string{"status": "ok"})

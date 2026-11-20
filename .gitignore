@@ -12,4 +12,6 @@ project/project/
 *.log
 output/
 scala-analytics/output/
-target/
+target/# Node (consola web)
+node_modules/
+dist/

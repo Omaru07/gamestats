@@ -38,6 +38,22 @@ object Calc:
   def total(history: List[(MatchResult, PlayerStats)], key: String): Double =
     history.flatMap { case (_, ps) => numOf(ps.stats, key) }.sum
 
+  // El valor que más se repite (en empate, el menor, para que el resultado sea estable).
+  def mostCommon[A: Ordering](xs: List[A]): Option[A] =
+    xs.groupMapReduce(identity)(_ => 1)(_ + _)
+      .toList
+      .sortBy { case (x, n) => (-n, x) }
+      .headOption
+      .map(_._1)
+
+  // Cuántos resultados tienen ese texto en una estadística de la partida (p. ej. result = "WIN").
+  def countText(results: List[MatchResult], key: String, value: String): Int =
+    results.count(r => textOf(r.summary, key).contains(value))
+
+  // Promedio de una estadística numérica de la partida, entre las partidas que la tienen.
+  def meanOf(results: List[MatchResult], key: String): Option[Double] =
+    mean(results.flatMap(r => numOf(r.summary, key)))
+
   // ListMap conserva el orden en que se escribieron las estadísticas.
   def stats(entries: (String, Option[Stat])*): Stats =
     ListMap.from(entries.collect { case (k, Some(s)) => k -> s })
